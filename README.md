@@ -28,6 +28,7 @@ Cоздание интерактивного приложения и изуче�
 Скрин Sphere collider
 - Создаём скрипт движения для дракона, делаем так, чтоб он случайно менял направление движения, так же делаем, чтоб дракон с определённым интервалом спавнил яйца из префаба;
 
+
         public class EnemyDragon : MonoBehaviour
         {
             public GameObject dragonEggPrefab;
@@ -69,8 +70,10 @@ Cоздание интерактивного приложения и изуче�
                 }
             }
         }
+        
 
 - Создём скрипт для яйца, при падении ниже определённого Y яйцо уничтожается, при касание же земли яйцо становится невидимым и запсукает систему частиц;
+
 
         public class DragonEgg : MonoBehaviour
         {
@@ -99,6 +102,7 @@ Cоздание интерактивного приложения и изуче�
                 }
             }
         }
+        
 
 Скрин Cube + sphere
 Скрин Cube+sphere 2
@@ -106,31 +110,33 @@ Cоздание интерактивного приложения и изуче�
 - Создаём спавн нескольких щитов разного радиуса из префаба
 - Импортируем в Unity YandexSDK
 
-public class DragonPicker : MonoBehaviour
-{
-    public GameObject energyShieldPrefab;
-    public int numEnergyShield = 3;
-    public float energyShieldBottomY = -6f;
-    public float energyShieldRadius = 1.5f;
-    // Start is called before the first frame update
-    void Start()
-    {
-        YandexSDK sdk = YandexSDK.instance;
-        print(sdk);
-        print("SDK загружен");
-        for (int i = 1; i<= numEnergyShield; i++){
-            GameObject tShieldGo = Instantiate<GameObject>(energyShieldPrefab);
-            tShieldGo.transform.position = new Vector3(0, energyShieldBottomY, 0);
-            tShieldGo.transform.localScale = new Vector3(1*i, 1*i, 1*i);
-        }
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-}
+        public class DragonPicker : MonoBehaviour
+        {
+            public GameObject energyShieldPrefab;
+            public int numEnergyShield = 3;
+            public float energyShieldBottomY = -6f;
+            public float energyShieldRadius = 1.5f;
+            // Start is called before the first frame update
+            void Start()
+            {
+                YandexSDK sdk = YandexSDK.instance;
+                print(sdk);
+                print("SDK загружен");
+                for (int i = 1; i<= numEnergyShield; i++){
+                    GameObject tShieldGo = Instantiate<GameObject>(energyShieldPrefab);
+                    tShieldGo.transform.position = new Vector3(0, energyShieldBottomY, 0);
+                    tShieldGo.transform.localScale = new Vector3(1*i, 1*i, 1*i);
+                }
+            }
+
+            // Update is called once per frame
+            void Update()
+            {
+
+            }
+        }
+
 
 ## Задание 2
 ### В проект, выполненный в предыдущем задании, добавить систему проверки того, что SDK подключен (доступен в режиме онлайн и отвечает на запросы):
@@ -138,6 +144,7 @@ public class DragonPicker : MonoBehaviour
 - Добавляем на сцену объект SDK
 - Выводим в консолько сам SDK, если запуск был не успешен, то выведется ошибка
         
+        
     void Start()
     {
         YandexSDK sdk = YandexSDK.instance;
@@ -149,3 +156,5 @@ public class DragonPicker : MonoBehaviour
             tShieldGo.transform.localScale = new Vector3(1*i, 1*i, 1*i);
         }
     }
+        
+        
