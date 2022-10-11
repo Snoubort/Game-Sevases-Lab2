@@ -11,6 +11,9 @@ public class DragonPicker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        YandexSDK sdk = YandexSDK.instance;
+        print(sdk);
+        ///YandexSDK.Authenticate();
         for (int i = 1; i<= numEnergyShield; i++){
             GameObject tShieldGo = Instantiate<GameObject>(energyShieldPrefab);
             tShieldGo.transform.position = new Vector3(0, energyShieldBottomY, 0);
