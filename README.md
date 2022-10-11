@@ -7,100 +7,145 @@
 | ------ | ------ | ------ |
 | Задание 1 | * |   60 |
 | Задание 2 | * |   20 |
-| Задание 3 | * |   20 |
+| Задание 3 | # |   20 |
 
 ## Цель работы
 Cоздание интерактивного приложения и изучение принципов интеграции в него игровых сервисов
 ## Задание 1
 ### По теме видео практических работ 1-5 повторить реализацию игры на Unity. Привести описание выполненных действий.
 Ход работы:
-- Создать новый проект из шаблона 3D – Core;
-- Проверить, что настроена интеграция редактора Unity и Visual Studio Code (пункты 8-10 введения);
+- Изменяем название сцены;
+- Создаём сферу, вытягием ём по вертикали, тем самым делая яйцо, создаём материал;
 Скрин "Подготовка"
-- Создать объект Plane;
+- Импортируем пак драконов;
 Скрин plane
-- Создать объект Cube;
+- Делаем дубликат модели дракона;
 Скрин cube
--	Создать объект Sphere;
+- Создаём новый контроллер анимации для дракона, редактируем, вешаем новый котроллер на дубликат дракона;
 Скрин Sphere
--	Установить компонент Sphere Collider для объекта Sphere;
--	Настроить Sphere Collider в роли триггера;
+- Создаём щит и материал для него;
+- Импортируем огненные материалы, добавляем текстуры для яца и земли;
 Скрин Sphere collider
--	Объект куб перекрасить в красный цвет;
-Скрин Red cube
--	Добавить кубу симуляцию физики, при это куб не должен проваливаться под Plane;
-Скрин Red cube phisics
-- Написать скрипт, который будет выводить в консоль сообщение о том, что объект Sphere столкнулся с объектом Cube;
+- Создаём скрипт движения для дракона, делаем так, чтоб он случайно менял направление движения, так же делаем, чтоб дракон с определённым интервалом спавнил яйца из префаба;
 
-        public class AddCollider : MonoBehaviour
+        public class EnemyDragon : MonoBehaviour
         {
+            public GameObject dragonEggPrefab;
+            public float speed = 1;
+            public float timeBetweenEggDrops = 1f;
+            public float leftRightDistance = 10f;
+            public float chanceDirection = 0.1f;
             // Start is called before the first frame update
             void Start()
             {
+                Invoke("DropEgg", 2f);
+            }
 
+            void DropEgg(){
+                Vector3 myVector = new Vector3(0.0f, 5.0f, 0.0f);
+                GameObject egg = Instantiate<GameObject>(dragonEggPrefab);
+                egg.transform.position = transform.position + myVector;
+                Invoke("DropEgg", timeBetweenEggDrops);
             }
 
             // Update is called once per frame
             void Update()
+            {
+                Vector3 pos = transform.position;
+                pos.x += speed * Time.deltaTime;
+                transform.position = pos;
+
+                if (pos.x < -leftRightDistance){
+                    speed = Mathf.Abs(speed);
+                }
+                else if (pos.x > leftRightDistance){
+                    speed = -Mathf.Abs(speed);
+                }
+            }
+
+            private void FixedUpdate() {
+                if (Random.value < chanceDirection){
+                    speed *= -1;
+                }
+            }
+        }
+
+- Создём скрипт для яйца, при падении ниже определённого Y яйцо уничтожается, при касание же земли яйцо становится невидимым и запсукает систему частиц;
+
+        public class DragonEgg : MonoBehaviour
+        {
+            public static float bottomY = -30f;
+            // Start is called before the first frame update
+            void Start()
             {
 
             }
 
             private void OnTriggerEnter(Collider other) {
-                Debug.Log("Произошло столкновение с " + other.gameObject.name);
-                other.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.green); 
-            }
+                ParticleSystem ps = GetComponent<ParticleSystem>();
+                var em = ps.emission;
+                em.enabled = true;
 
-            private void OnTriggerExit(Collider other) {
-                Debug.Log("Завершили столкновение с " + other.gameObject.name);
-                other.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
-            }
-        }
-
-- При столкновении Cube должен менять свой цвет на зелёный, а при завершении столкновения обратно на красный.
-Скрин Cube + sphere
-Скрин Cube+sphere 2
-
-## Задание 2
-### В проект, выполненный в предыдущем задании, добавить систему проверки того, что SDK подключен (доступен в режиме онлайн и отвечает на запросы):
-- Что произойдёт с координатами объекта, если он перестанет быть дочерним?
-Координаты объекта изменятся с локальных на мировые
-Скрин cube dom
-Скрин Cube nod dom
-- Создайте три различных примера работы компонента RigidBody?
-Падение(гравитация), Существование как физической сущности(kinematic), Активация тригеров
-Скрин Gravity, trigger detection, kinematic
-Скрин Gravity, trigger, kinematic 2
-Скрин Not detected
-
-## Задание 3
-### Реализуйте на сцене генерацию n кубиков. Число n вводится пользователем после старта сцены.
-Создаём public переменную типа int
-Считываем значение переменной при обновлении
-Если значение - верное количество объектов - спавник кубики
-Скрин Start spawn
-Скрин End Spawn
-
-        public class ReadLine : MonoBehaviour
-        {
-            public int n = -1;
-            public GameObject PrefCub;
-            public GameObject self;
-            // Start is called before the first frame update
-            void Start()
-            {
-
+                Renderer rend;
+                rend = GetComponent<Renderer>();
+                rend.enabled = false;
             }
 
             // Update is called once per frame
             void Update()
             {
-                if(n >=0){
-                    for (int i = 0; i<n; i++){
-                        Instantiate(PrefCub, self.transform.position, self.transform.rotation);
-                    }
-                    n = -1;
+                if(transform.position.y < bottomY){
+                    Destroy(this.gameObject);
                 }
-
             }
         }
+
+Скрин Cube + sphere
+Скрин Cube+sphere 2
+
+- Создаём спавн нескольких щитов разного радиуса из префаба
+- Импортируем в Unity YandexSDK
+
+public class DragonPicker : MonoBehaviour
+{
+    public GameObject energyShieldPrefab;
+    public int numEnergyShield = 3;
+    public float energyShieldBottomY = -6f;
+    public float energyShieldRadius = 1.5f;
+    // Start is called before the first frame update
+    void Start()
+    {
+        YandexSDK sdk = YandexSDK.instance;
+        print(sdk);
+        print("SDK загружен");
+        for (int i = 1; i<= numEnergyShield; i++){
+            GameObject tShieldGo = Instantiate<GameObject>(energyShieldPrefab);
+            tShieldGo.transform.position = new Vector3(0, energyShieldBottomY, 0);
+            tShieldGo.transform.localScale = new Vector3(1*i, 1*i, 1*i);
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
+
+## Задание 2
+### В проект, выполненный в предыдущем задании, добавить систему проверки того, что SDK подключен (доступен в режиме онлайн и отвечает на запросы):
+- Инициализируем SDK при старте игры
+- Добавляем на сцену объект SDK
+- Выводим в консолько сам SDK, если запуск был не успешен, то выведется ошибка
+        
+    void Start()
+    {
+        YandexSDK sdk = YandexSDK.instance;
+        print(sdk);
+        print("SDK загружен");
+        for (int i = 1; i<= numEnergyShield; i++){
+            GameObject tShieldGo = Instantiate<GameObject>(energyShieldPrefab);
+            tShieldGo.transform.position = new Vector3(0, energyShieldBottomY, 0);
+            tShieldGo.transform.localScale = new Vector3(1*i, 1*i, 1*i);
+        }
+    }
